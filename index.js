@@ -43,13 +43,6 @@ io.on("connection", (socket) => {
         user: "bot",
       });
     } else {
-      console.log("working");
-      const {
-        contact,
-        numberOfGuest,
-        reserveDate,
-      } = context.conversation.entities;
-      context.conversation.followUp = `Alright ${contact} a table has been booked for ${numberOfGuest} for ${reserveDate}`;
       io.emit("message", {
         message: context.conversation.followUp,
         user: "bot",

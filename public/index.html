@@ -72,7 +72,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socketConn = () => {
-        const socket = io.connect("http://localhost:7000");
+        const socket = io.connect("http://localhost:${process.env.PORT || 7000}");
         return {
           getSocketConn: () => {
             return socket;
