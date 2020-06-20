@@ -69,10 +69,10 @@
         </div>
       </div>
     </div>
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
     <script>
       const socketConn = () => {
-        const socket = io.connect();
+        const socket = io.connect("https://myspheet-chatbot.herokuapp.com");
         return {
           getSocketConn: () => {
             return socket;
