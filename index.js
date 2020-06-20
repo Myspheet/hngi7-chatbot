@@ -36,8 +36,20 @@ io.on("connection", (socket) => {
       data.chatMsg,
       socket.context
     );
-    console.log(context.conversation.followUp);
-    if (!context.conversation.complete) {
+    console.log(socket.context.conversation.complete);
+    if (!socket.context.conversation.complete) {
+      io.emit("message", {
+        message: context.conversation.followUp,
+        user: "bot",
+      });
+    } else {
+      console.log("working");
+      const {
+        contact,
+        numberOfGuest,
+        reserveDate,
+      } = context.conversation.entities;
+      context.conversation.followUp = `Alright ${contact} a table has been booked for ${numberOfGuest} for ${reserveDate}`;
       io.emit("message", {
         message: context.conversation.followUp,
         user: "bot",

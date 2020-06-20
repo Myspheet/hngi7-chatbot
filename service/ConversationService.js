@@ -17,32 +17,60 @@ class ConversationService {
     try {
       const { extratedEntities, intents } = await witService.query(text);
       console.log(intents);
+      if (!intents && !context.conversation.complete) {
+        context.conversation.followUp = "Could you please rephrase?";
+      }
       context.conversation.intent = intents[0];
       context.conversation.entities = {
         ...context.conversation.entities,
         ...extratedEntities,
       };
+
+      if (
+        context.conversation.intent &&
+        context.conversation.intent.name === "farewell"
+      ) {
+        context.conversation.followUp = "ok, good bye";
+        context.conversation.exit = true;
+        return context;
+      }
+
+      if (
+        context.conversation.intent &&
+        context.conversation.intent.name === "greeting"
+      ) {
+        context.conversation.followUp = "Hello there!";
+        return context;
+      }
+
+      if (
+        context.conversation.intent &&
+        context.conversation.intent.name === "reservation"
+      ) {
+        return ConversationService.intentReservation(context);
+      }
+
+      // Check if the we have all the necessary details to book a reservation
+      if (
+        context.conversation.entities.reserveDate &&
+        context.conversation.entities.contact &&
+        context.conversation.entities.numberOfGuest
+      ) {
+        const {
+          contact,
+          numberOfGuest,
+          reserveDate,
+        } = context.conversation.entities;
+        context.conversation.followUp = context.conversation.followUp = `Alright ${contact} a table has been booked for ${numberOfGuest} for ${reserveDate}`;
+
+        context.conversation.complete = true;
+        return context;
+      }
+      context.conversation.followUp = "Could you rephrase that please?";
+      return context;
     } catch (err) {
       console.log(err);
     }
-
-    if (context.conversation.intent.name === "farewell") {
-      context.conversation.followUp = "ok, good bye";
-      context.conversation.exit = true;
-      return context;
-    }
-
-    if (context.conversation.intent.name === "greeting") {
-      context.conversation.followUp = "Hello there!";
-      context.conversation.exit = false;
-      return context;
-    }
-
-    if (context.conversation.intent.name === "reservation") {
-      return ConversationService.intentReservation(context);
-    }
-    context.conversation.followUp = "Could you rephrase that please?";
-    return context;
   }
 
   static intentReservation(context) {
@@ -55,7 +83,8 @@ class ConversationService {
         "Time for this reservation?",
       ];
       conversation.followUp =
-        "For when would you like to make the reservation?";
+        reserveDateFollowUp[Math.floor(Math.random()) * 2];
+
       return context;
     }
     if (!entities.numberOfGuest) {
