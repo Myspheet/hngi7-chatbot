@@ -1,0 +1,116 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatty</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container" id="chat-screen" style="height: 90vh;">
+      <div class="row mt-3" style="height: 85vh; overflow-y: auto;">
+        <div
+          class="col-sm-8 mb-2"
+          style="height: 85vh; overflow-y: auto;"
+          id="messages"
+        ></div>
+        <div class="col-sm-4" id="active-users">
+          <h3>People Online</h3>
+          <ul id="active-users-list"></ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
+          <form class="form mt-3">
+            <div class="form-row">
+              <div class="col-sm-10">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="chat-msg"
+                  placeholder="Enter your message"
+                />
+              </div>
+              <div class="col">
+                <button
+                  type="submit"
+                  id="send-msg"
+                  class="btn btn-primary mb-2"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socketConn = () => {
+        const socket = io.connect("http://localhost:7000");
+        return {
+          getSocketConn: () => {
+            return socket;
+          },
+        };
+      };
+      const conn = socketConn();
+      const socket = conn.getSocketConn();
+      console.log(socket);
+      socket.on("message", (data) => {
+        console.log(data);
+        socket.emit("another event", { Jeremy: "I am great, thank you" });
+      });
+
+      const chatBtn = document.querySelector("#send-msg");
+      chatBtn.addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          const socket = conn.getSocketConn();
+          const chatMsg = document.querySelector("#chat-msg");
+
+          socket.emit("message", { chatMsg: chatMsg.value, user: "user" });
+          chatMsg.value = "";
+        },
+        false
+      );
+
+      socket.on("message", (data) => {
+        const messagesDiv = document.querySelector("#messages");
+        let template;
+        console.log(socket.id);
+        console.log(data.id);
+        if (data.user === "user") {
+          template = `
+      	<div class="row mt-3 d-flex justify-content-end">
+      		<div class="col-sm-8 float-right">
+      			<div style="background-color: green;">
+      				<div id="message">${data.message}</div>
+      			</div>
+      		</div>
+      	</div>
+      `;
+        } else {
+          template = `
+      	<div class="row mt-3">
+      		<div class="col-sm-8">
+      			<div style="background-color: aqua;">
+      				<div id="message">${data.message}</div>
+      			</div>
+      		</div>
+      	</div>
+      `;
+        }
+
+        messagesDiv.innerHTML += template;
+      });
+    </script>
+  </body>
+</html>
