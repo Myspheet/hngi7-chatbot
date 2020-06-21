@@ -40,6 +40,9 @@
   <body>
     <div class="container">
       <div class="row">
+        <h3 style="margin: 10px; margin-top: 70px;">
+          Click the Purple button to open the bot
+        </h3>
         <div id="Smallchat">
           <div class="Layout Layout-open Layout-expand Layout-right">
             <div class="Messenger_messenger">
@@ -78,12 +81,13 @@
                     class="Input Input-blank"
                     style="position: fixed; bottom: 0;"
                   >
-                    <textarea
+                    <input
+                      type="text"
                       class="Input_field"
                       id="chat-message"
                       placeholder="Send a message..."
                       style="height: 20px;"
-                    ></textarea>
+                    />
                     <button class="Input_button Input_button-send" id="send">
                       <div class="Icon" style="width: 18px; height: 18px;">
                         <svg
@@ -160,7 +164,9 @@
           $(".chat_on").show(300);
         });
         var chatOutput = $("#chat-output");
-        $("#send").click(function (e) {
+        var submitText = $("#chat-message");
+
+        function handleChat(e) {
           e.preventDefault();
           var chatMessage = $("#chat-message");
           var message = chatMessage.val();
@@ -190,7 +196,8 @@
           `);
             },
           });
-        });
+        }
+        $("#send").click(handleChat);
       });
 
       // const chatBtn = document.querySelector("#send-msg");
