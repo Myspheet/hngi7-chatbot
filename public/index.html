@@ -122,13 +122,16 @@
       `;
         messagesDiv.innerHTML += template;
         const data = { message: chatMsg.value };
-        let receivedData = await fetch("http://localhost:7000", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+        let receivedData = await fetch(
+          "https://myspheet-chatbot.herokuapp.com",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
 
         receivedData = await receivedData.json();
         template = `
