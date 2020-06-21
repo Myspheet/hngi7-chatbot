@@ -34,6 +34,20 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
+app.options("/", async (req, res) => {
+  // res.sendFile(__dirname + "/public/index.html");
+
+  if (!req.session.context) {
+    req.session.context = {};
+  }
+  const context = await ConversationService.run(
+    witService,
+    req.body.message,
+    req.session.context
+  );
+  res.json({ message: context.conversation.followUp });
+});
+
 app.post("/", async (req, res) => {
   // res.sendFile(__dirname + "/public/index.html");
 
