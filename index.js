@@ -3,6 +3,7 @@ const app = express();
 const server = require("http").Server(app);
 const session = require("express-session");
 const io = require("socket.io")(server);
+const cors = require("cors");
 const port = process.env.PORT || 7000;
 const WitService = require("./service/WitService");
 const ConversationService = require("./service/ConversationService");
@@ -11,6 +12,12 @@ const ConversationService = require("./service/ConversationService");
 require("dotenv").config();
 
 // middleware
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+  })
+);
 app.use(express.json());
 app.use(
   session({
