@@ -22,7 +22,6 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 const context = {};
-
 io.on("connection", (socket) => {
   socket.context = context;
   io.emit("message", {

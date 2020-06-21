@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 class ConversationService {
   static async run(witService, text, context) {
     if (!context.conversation) {
@@ -8,6 +10,12 @@ class ConversationService {
         complete: false,
         exit: false,
       };
+    }
+
+    if (context.conversation.complete || context.conversation.exit) {
+      context.conversation.followUp = "Bye!";
+      context.conversation = {};
+      return context;
     }
 
     if (!text) {
@@ -39,13 +47,15 @@ class ConversationService {
         context.conversation.intent &&
         context.conversation.intent.name === "greeting"
       ) {
-        context.conversation.followUp = "Hello there!";
+        context.conversation.followUp =
+          "Hello there! I'll take your reservation order now";
         return context;
       }
 
       if (
         context.conversation.intent &&
-        context.conversation.intent.name === "reservation"
+        context.conversation.intent.name === "reservation" &&
+        context.conversation.intent.confidence > 0.8
       ) {
         return ConversationService.intentReservation(context);
       }
@@ -61,12 +71,24 @@ class ConversationService {
           numberOfGuest,
           reserveDate,
         } = context.conversation.entities;
-        context.conversation.followUp = context.conversation.followUp = `Alright ${contact} a table has been booked for ${numberOfGuest} for ${reserveDate}`;
+        const followUpBookConvo = [
+          `Alright ${contact} a table has been booked for ${numberOfGuest} Guests`,
+          `Thank You ${contact}, reservation successful`,
+          `Your reservation for ${numberOfGuest} has been successfull`,
+          `Thank you, your reservation is successful, BYE!`,
+        ];
+        context.conversation.followUp = context.conversation.followUp =
+          followUpBookConvo[Math.floor(Math.random() * 4)];
 
         context.conversation.complete = true;
         return context;
       }
-      context.conversation.followUp = "Could you rephrase that please?";
+      const retry = [
+        "Could you rephrase that please",
+        "I didn't get that",
+        "Please make a reservation by tellling me your name",
+      ];
+      context.conversation.followUp = retry[Math.floor(Math.random() * 3)];
       return context;
     } catch (err) {
       console.log(err);
@@ -83,7 +105,7 @@ class ConversationService {
         "Time for this reservation?",
       ];
       conversation.followUp =
-        reserveDateFollowUp[Math.floor(Math.random()) * 2];
+        reserveDateFollowUp[Math.floor(Math.random() * 3)];
 
       return context;
     }
@@ -94,7 +116,8 @@ class ConversationService {
         "How many people are you expecting?",
       ];
 
-      conversation.followUp = "For how many persons?";
+      conversation.followUp =
+        numberOfGuestsFollowUp[Math.floor(Math.random() * 3)];
       return context;
     }
     if (!entities.contact) {
@@ -104,7 +127,7 @@ class ConversationService {
         "What is your name?",
       ];
 
-      conversation.followUp = "Would you tell me your name please?";
+      conversation.followUp = contactFollowUp[Math.floor(Math.random() * 3)];
       return context;
     }
 
