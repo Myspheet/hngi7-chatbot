@@ -45,7 +45,23 @@
             flex-direction: column-reverse;
           "
         >
-          <div id="messages"></div>
+          <div id="messages">
+            <div class="row mt-3">
+              <div class="chatbox col-sm-8 col-md-6">
+                <img
+                  src="https://www.internetandtechnologylaw.com/files/2019/06/iStock-872962368-chat-bots.jpg"
+                  width="20%"
+                  alt="Avatar"
+                  class="right"
+                />
+
+                <span>
+                  "Hello, I'm Resi and I can help you book a reservation at the
+                  Continental Diner!"
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row">
@@ -77,8 +93,8 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socketConn = () => {
-        // const socket = io.connect("http://localhost:7000");
-        const socket = io.connect("https://myspheet-chatbot.herokuapp.com");
+        const socket = io.connect("http://localhost:7000");
+        // const socket = io.connect("https://myspheet-chatbot.herokuapp.com");
         return {
           getSocketConn: () => {
             return socket;
@@ -89,18 +105,59 @@
       const socket = conn.getSocketConn();
 
       const chatBtn = document.querySelector("#send-msg");
-      chatBtn.addEventListener(
-        "click",
-        (e) => {
-          e.preventDefault();
-          const socket = conn.getSocketConn();
-          const chatMsg = document.querySelector("#chat-msg");
+      chatBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const messagesDiv = document.querySelector("#messages");
+        let template;
 
-          socket.emit("message", { chatMsg: chatMsg.value, user: "user" });
-          chatMsg.value = "";
-        },
-        false
-      );
+        const chatMsg = document.querySelector("#chat-msg");
+        template = `
+      	<div class="row mt-2 d-flex justify-content-end">
+      		<div class="col-sm-8 col-md-6 chatbox darker text-right">
+      			<span>
+      				${chatMsg.value}
+      			</span>
+      		</div>
+      	</div>
+      `;
+        messagesDiv.innerHTML += template;
+        const data = { message: chatMsg.value };
+        let receivedData = await fetch("http://localhost:7000", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        receivedData = await receivedData.json();
+        template = `
+      	<div class="row mt-3">
+          <div class="chatbox col-sm-8 col-md-6">
+            <img src="https://www.internetandtechnologylaw.com/files/2019/06/iStock-872962368-chat-bots.jpg" width="20%" alt="Avatar" class="right">
+
+      			<span>
+      				${receivedData.message}
+      			</span>
+      		</div>
+      	</div>
+      `;
+        messagesDiv.innerHTML += template;
+
+        chatMsg.value = "";
+      });
+      // chatBtn.addEventListener(
+      //   "click",
+      //   (e) => {
+      //     e.preventDefault();
+      //     const socket = conn.getSocketConn();
+      //     const chatMsg = document.querySelector("#chat-msg");
+
+      //     socket.emit("message", { chatMsg: chatMsg.value, user: "user" });
+      //     chatMsg.value = "";
+      //   },
+      //   false
+      // );
 
       socket.on("message", (data) => {
         const messagesDiv = document.querySelector("#messages");
