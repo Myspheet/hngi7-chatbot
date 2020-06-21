@@ -87,6 +87,9 @@ class ConversationService {
         "Could you rephrase that please",
         "I didn't get that",
         "Please make a reservation by tellling me your name",
+        "Please make a reservation by tellling me the number of guests you're expecting",
+        "Please make a reservation by tellling me the the time for the reservation",
+        "Please make a reservation",
       ];
       context.conversation.followUp = retry[Math.floor(Math.random() * 3)];
       return context;
