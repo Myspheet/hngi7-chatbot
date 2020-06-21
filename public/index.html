@@ -63,11 +63,11 @@
                 "
               >
                 <div class="chat-output" id="chat-output">
-                  <div class="user-message">
-                    <div class="message">Hi! I'm a User. What's up?</div>
-                  </div>
                   <div class="bot-message">
-                    <div class="message">Hi! I'm a bot. What's up?</div>
+                    <div class="message">
+                      Hi! I'm a Rosy. I can help you make a table reservation,
+                      just tell me what you want?
+                    </div>
                   </div>
                 </div>
                 <div class="Messenger_content">
@@ -146,8 +146,16 @@
           $(".Layout").toggle();
           $(".chat_on").hide(300);
         });
+        $(".chat_on").on("tap", function () {
+          $(".Layout").toggle();
+          $(".chat_on").hide(300);
+        });
 
         $(".chat_close_icon").click(function () {
+          $(".Layout").hide();
+          $(".chat_on").show(300);
+        });
+        $(".chat_close_icon").on("tap", function () {
           $(".Layout").hide();
           $(".chat_on").show(300);
         });
